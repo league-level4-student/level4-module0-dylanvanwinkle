@@ -29,7 +29,7 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		this.cellsPerRow = cpr;
 
 		// 2. Calculate the cell size.
-		int cellSize = w / cellsPerRow;
+		cellSize = w / cellsPerRow;
 		// 3. Initialize the cell array to the appropriate size.
 		cellArray2d = new Cell[cellsPerRow][cellsPerRow];
 		// 3. Iterate through the array and initialize each cell.
@@ -37,7 +37,7 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		// passing in the location.
 		for (int i = 0; i < cellArray2d.length; i++) {
 			for (int j = 0; j < cellArray2d.length; j++) {
-				cellArray2d[i][j] = new Cell(j * cellSize, i * cellSize, cellSize);
+				cellArray2d[i][j] = new Cell(i * cellSize, j * cellSize, cellSize);
 			}
 		}
 	}
@@ -46,9 +46,9 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		// 4. Iterate through each cell and randomly set each
 		// cell's isAlive memeber to true of false
 		Random ran = new Random();
-		int r = ran.nextInt(2);
 		for (int i = 0; i < cellArray2d.length; i++) {
 			for (int j = 0; j < cellArray2d.length; j++) {
+				int r = ran.nextInt(2);
 				if (r == 0) {
 					cellArray2d[i][j].isAlive = true;
 				} else {
@@ -85,10 +85,15 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 	@Override
 	public void paintComponent(Graphics g) {
 		// 6. Iterate through the cells and draw them all
-
-		// draws grid
-		g.setColor(Color.BLACK);
-		g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+		for (int i = 0; i < cellArray2d.length; i++) {
+			for (int j = 0; j < cellArray2d.length; j++) {
+				// draws grid
+				cellArray2d[i][j].draw(g);
+				g.setColor(Color.BLACK);
+				g.drawRect(cellArray2d[i][j].getX(),cellArray2d[i][j].getY(),cellSize,cellSize);
+				
+			}
+		}
 	}
 
 	// advances world one step
@@ -98,27 +103,14 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		int[][] livingNeighbors = new int[cellsPerRow][cellsPerRow];
 		for (int i = 0; i < cellArray2d.length; i++) {
 			for (int j = 0; j < cellArray2d.length; j++) {
-				livingNeighbors[i][j] = getLivingNeighbors(cellArray2d[i][j].getX(), cellArray2d[i][j].getY());
+				livingNeighbors[i][j] = getLivingNeighbors(i, j);
 			}
 		}
 
 		// 8. check if each cell should live or die
 		for (int i = 0; i < cellArray2d.length; i++) {
 			for (int j = 0; j < cellArray2d.length; j++) {
-				if (cellArray2d[i][j].isAlive) {
-
-					if (livingNeighbors[i][j] < 2) {
-						cellArray2d[i][j].isAlive = false;
-					} else if ((livingNeighbors[i][j] == 2 || livingNeighbors[i][j] == 3)) {
-						cellArray2d[i][j].isAlive = true;
-					} else if (livingNeighbors[i][j] > 3) {
-						cellArray2d[i][j].isAlive = false;
-					}
-				}else {
-					if (livingNeighbors[i][j] == 3) {
-						cellArray2d[i][j].isAlive = false;
-					}
-				}
+	cellArray2d[i][j].liveOrDie(livingNeighbors[i][j]);	
 			}
 		}
 		repaint();
@@ -129,7 +121,32 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 	// living neighbors there are of the
 	// cell identified by x and y
 	public int getLivingNeighbors(int x, int y) {
-		return 0;
+		int counter = 0;
+		if (x < cellsPerRow - 1 && cellArray2d[x + 1][y].isAlive) {
+			counter++;
+		}
+		if (y < cellsPerRow - 1 && cellArray2d[x][y + 1].isAlive) {
+			counter++;
+		}
+		if (y > 0 && cellArray2d[x][y - 1].isAlive) {
+			counter++;
+		}
+		if (x > 0 && cellArray2d[x - 1][y].isAlive) {
+			counter++;
+		}
+		if (x < cellsPerRow - 1 && y < cellsPerRow - 1 && cellArray2d[x + 1][y + 1].isAlive) {
+			counter++;
+		}
+		if (x > 0 && y > 0 && cellArray2d[x - 1][y - 1].isAlive) {
+			counter++;
+		}
+		if (x > 0 && y < cellsPerRow - 1 && cellArray2d[x - 1][y + 1].isAlive) {
+			counter++;
+		}
+		if (y > 0 && x < cellsPerRow - 1 && cellArray2d[x + 1][y - 1].isAlive) {
+			counter++;
+		}
+		return counter;
 	}
 
 	@Override
@@ -154,15 +171,9 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		// 10. Use e.getX() and e.getY() to determine
 		// which cell is clicked. Then toggle
 		// the isAlive variable for that cell.
-		for (int i = 0; i < cellArray2d.length; i++) {
-			for (int j = 0; j < cellArray2d.length; j++) {
-				if (cellArray2d[i][j].isAlive) {
-					cellArray2d[i][j].isAlive = false;
-				} else {
-					cellArray2d[i][j].isAlive = true;
-				}
-			}
-		}
+
+		cellArray2d[e.getX() / cellSize][e.getY()
+				/ cellSize].isAlive = !cellArray2d[e.getX() / cellSize][e.getY() / cellSize].isAlive;
 
 		repaint();
 	}
