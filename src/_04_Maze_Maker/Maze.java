@@ -3,7 +3,7 @@ import java.awt.Graphics;
 
 public class Maze {
 	//1. Create a 2D array of cells. Don't initialize it.
-Cell[][] cells;
+public static Cell[][] cells;
 	private int width;
 	private int height;
 
@@ -32,8 +32,8 @@ Cell[][] cells;
 	}
 	
 	//4b. This method returns the selected cell.
-	public Cell getCell(int x, int y){
-		return  null;
+	public static Cell getCell(int x, int y){
+		return  cells[x][y];
 	}
 
 	public int getWidth() {
