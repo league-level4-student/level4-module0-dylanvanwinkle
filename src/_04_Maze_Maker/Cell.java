@@ -47,6 +47,7 @@ public class Cell {
 		if(westWall){
 			g.drawLine((x * size) + X_MARGIN, (y * size) + Y_MARGIN, (x * size) + X_MARGIN, (y * size) + size + Y_MARGIN);
 		}
+
 	}
 
 	public int getX() {

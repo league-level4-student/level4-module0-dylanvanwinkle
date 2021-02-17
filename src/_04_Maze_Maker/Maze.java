@@ -25,8 +25,8 @@ public static Cell[][] cells;
 	//4. This method iterates through the cells and draws them
 	public void draw(Graphics g) {
 		for (int i = 0; i < cells.length; i++) {
-			for (int j = 0; j < cells.length; j++) {
-				g.fillRect(cells[i][j].getX(),cells[i][j].getY(), MazeDisplay.WIDTH/width, MazeDisplay.HEIGHT/height);
+			for (int j = 0; j < cells[i].length; j++) {
+				cells[i][j].draw(g);
 			}
 			}
 	}
